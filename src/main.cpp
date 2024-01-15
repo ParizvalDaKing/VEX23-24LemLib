@@ -156,16 +156,21 @@ void opcontrol() {
 	float left_stick_prev = 0;
 	float right_stick_prev = 0;
 
+	int deadzone = 5;
+
+	left_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+	right_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+
 
 
 	while (true) {
 		leftY = master.get_analog(ANALOG_LEFT_Y);
-		rightY = master.get_analog(ANALOG_RIGHT_Y);
-		leftX = master.get_analog(ANALOG_LEFT_X);
 		rightX = master.get_analog(ANALOG_RIGHT_X);
 
 		left_raw = -leftY - rightX;
 		right_raw = -leftY + rightX;
+
+		//drift reduction
 
 		//smoothing
 
@@ -174,8 +179,21 @@ void opcontrol() {
 
 		right_stick_prev = right_stick_smoothed;
 		left_stick_smoothed = left_stick_smoothed;
+
+
 		//end of smoothing
 
+		if(abs(leftY) < deadzone) {
+			leftY = 0;
+			left_side_motors.brake();
+		}
+		if(abs(rightX) < deadzone) {
+			rightX = 0;
+			right_side_motors.brake();
+		}
+
+		//end of drift reduction
+		
 		left_side_motors = .1 + 05*(left_raw) + .000018*pow(left_raw ,3) + .0000000025*pow(left_raw,5);
 		right_side_motors = .1 + .05*(right_raw) + .000018*pow(right_raw ,3) + .0000000025*pow(right_raw,5);
 
