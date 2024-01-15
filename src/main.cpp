@@ -85,6 +85,7 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 
 	chassis.calibrate();
+	chassis.setPose(-40, 53, 161);
 }
 
 /**
@@ -117,7 +118,9 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	
+	chassis.turnTo(-25, 6, 1000);
+	chassis.moveTo(-25, 6, 1000);
+
 }
 
 /**
@@ -137,38 +140,54 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::Motor leftShooterIntake(8, pros::E_MOTOR_GEARSET_06, true);
 	pros::Motor rightShooterIntake(9, pros::E_MOTOR_GEARSET_06);
-	pros::Motor_Group ShooterIntake({leftShooterIntake, rightShooterIntake})
+	pros::Motor_Group ShooterIntake({leftShooterIntake, rightShooterIntake});
+	pros::ADIDigitalOut wings ('A');
 
-	pros::Motor rightShooterIntake();
-	pros::ADIDigitalOut wings ('A')
-	int leftY = master.get_analog(ANALOG_LEFT_Y);
-	int rightY = master.get_analog(ANALOG_RIGHT_Y);
-	int leftX = master.get_analog(ANALOG_LEFT_X);
-	int rightX = master.get_analog(ANALOG_RIGHT_X);
+	float leftY = 0;
+	float rightY = 0;
+	float leftX = 0;
+	float rightX = 0;
 
-	int left_raw = 0;
-	int right_raw = 0;
+	float left_raw = 0;
+	float right_raw = 0;
+
+	float right_stick_smoothed = 0;
+	float left_stick_smoothed = 0;
+	float left_stick_prev = 0;
+	float right_stick_prev = 0;
+
+
 
 	while (true) {
-		// pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		//                  (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		//                  (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		left_raw = left_y + right_x;
-		right_raw = left_y - right_x;
+		leftY = master.get_analog(ANALOG_LEFT_Y);
+		rightY = master.get_analog(ANALOG_RIGHT_Y);
+		leftX = master.get_analog(ANALOG_LEFT_X);
+		rightX = master.get_analog(ANALOG_RIGHT_X);
 
-		left_side_motors = .1 + .5*(left_raw) + .15*pow(left_raw ,3) + .25*pow(left_raw,5);
-		right_side_motors = .1 + .5*(right_raw) + .15*pow(right_raw ,3) + .25*pow(right_raw,5);
+		left_raw = -leftY - rightX;
+		right_raw = -leftY + rightX;
+
+		//smoothing
+
+		right_stick_smoothed = (right_raw * 0.03) + (right_stick_prev * 0.97);
+		left_stick_smoothed =  (left_raw * 0.03) + (left_stick_prev * 0.97);
+
+		right_stick_prev = right_stick_smoothed;
+		left_stick_smoothed = left_stick_smoothed;
+		//end of smoothing
+
+		left_side_motors = .1 + 05*(left_raw) + .000018*pow(left_raw ,3) + .0000000025*pow(left_raw,5);
+		right_side_motors = .1 + .05*(right_raw) + .000018*pow(right_raw ,3) + .0000000025*pow(right_raw,5);
 
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 			ShooterIntake = 90;
 		}
-		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			ShooterIntake = -90;
 		}
 		else {
 			ShooterIntake = 0;
 		}
-
 
 		pros::delay(20);
 	}
