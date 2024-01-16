@@ -9,12 +9,12 @@
  * "I was pressed!" and nothing.
  */
 
-pros::Motor left_front_motor(2, pros::E_MOTOR_GEARSET_06, false); // port 1, blue gearbox, not reversed
-pros::Motor left_middle_motor(3, pros::E_MOTOR_GEARSET_06, false);
-pros::Motor left_back_motor(5, pros::E_MOTOR_GEARSET_06, false); // port 2, green gearbox, not reversed
-pros::Motor right_front_motor(7, pros::E_MOTOR_GEARSET_06, true); // port 3, red gearbox, reversed
-pros::Motor right_middle_motor(6,pros::E_MOTOR_GEARSET_06, true );
-pros::Motor right_back_motor(4, pros::E_MOTOR_GEARSET_06, true); // port 4, red gearbox, reversed
+pros::Motor left_front_motor(2, pros::E_MOTOR_GEARSET_06, true); // port 1, blue gearbox, not reversed
+pros::Motor left_middle_motor(3, pros::E_MOTOR_GEARSET_06, true);
+pros::Motor left_back_motor(5, pros::E_MOTOR_GEARSET_06, true); // port 2, green gearbox, not reversed
+pros::Motor right_front_motor(7, pros::E_MOTOR_GEARSET_06, false); // port 3, red gearbox, reversed
+pros::Motor right_middle_motor(6,pros::E_MOTOR_GEARSET_06, false);
+pros::Motor right_back_motor(4, pros::E_MOTOR_GEARSET_06, false); // port 4, red gearbox, reversed
 
 pros::MotorGroup left_side_motors({left_front_motor, left_middle_motor, left_back_motor});
 pros::MotorGroup right_side_motors({right_front_motor, right_middle_motor, right_back_motor});
@@ -120,7 +120,6 @@ void competition_initialize() {}
 void autonomous() {
 	chassis.turnTo(-25, 6, 1000);
 	chassis.moveTo(-25, 6, 1000);
-
 }
 
 /**
@@ -136,6 +135,15 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+float defaultDriveCurve(float input, float scale) {
+    if (scale != 0) {
+        return (powf(2.718, -(scale / 10)) + powf(2.718, (fabs(input) - 127) / 10) * (1 - powf(2.718, -(scale / 10)))) *
+               input;
+    }
+    return input;
+}
+
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::Motor leftShooterIntake(8, pros::E_MOTOR_GEARSET_06, true);
@@ -144,58 +152,54 @@ void opcontrol() {
 	pros::ADIDigitalOut wings ('A');
 
 	float leftY = 0;
-	float rightY = 0;
-	float leftX = 0;
 	float rightX = 0;
 
-	float left_raw = 0;
-	float right_raw = 0;
+	// float left_raw = 0;
+	// float right_raw = 0;
 
-	float right_stick_smoothed = 0;
-	float left_stick_smoothed = 0;
-	float left_stick_prev = 0;
-	float right_stick_prev = 0;
+	// float right_stick_smoothed = 0;
+	// float left_stick_smoothed = 0;
+	// float left_stick_prev = 0;
+	// float right_stick_prev = 0;
 
-	int deadzone = 5;
+	// int deadzone = 5;
 
-	left_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
-	right_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
-
-
+	// left_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	// right_side_motors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
 	while (true) {
 		leftY = master.get_analog(ANALOG_LEFT_Y);
 		rightX = master.get_analog(ANALOG_RIGHT_X);
 
-		left_raw = -leftY - rightX;
-		right_raw = -leftY + rightX;
+		// left_raw = -leftY - rightX;
+		// right_raw = -leftY + rightX;
 
 		//drift reduction
 
 		//smoothing
 
-		right_stick_smoothed = (right_raw * 0.03) + (right_stick_prev * 0.97);
-		left_stick_smoothed =  (left_raw * 0.03) + (left_stick_prev * 0.97);
+		// right_stick_smoothed = (right_raw * 0.03) + (right_stick_prev * 0.97);
+		// left_stick_smoothed =  (left_raw * 0.03) + (left_stick_prev * 0.97);
 
-		right_stick_prev = right_stick_smoothed;
-		left_stick_smoothed = left_stick_smoothed;
+		// right_stick_prev = right_stick_smoothed;
+		// left_stick_prev = left_stick_smoothed;
 
 
 		//end of smoothing
 
-		if(abs(leftY) < deadzone) {
-			leftY = 0;
-			left_side_motors.brake();
-		}
-		if(abs(rightX) < deadzone) {
-			rightX = 0;
-			right_side_motors.brake();
-		}
+		// if(abs(leftY) < deadzone) {
+		// 	leftY = 0;
+		// 	left_side_motors.brake();
+		// }
+		// if(abs(rightX) < deadzone) {
+		// 	rightX = 0;
+		// 	right_side_motors.brake();
+		// }
 
 		//end of drift reduction
-		
-		left_side_motors = .1 + 05*(left_raw) + .000018*pow(left_raw ,3) + .0000000025*pow(left_raw,5);
-		right_side_motors = .1 + .05*(right_raw) + .000018*pow(right_raw ,3) + .0000000025*pow(right_raw,5);
+
+		left_side_motors = defaultDriveCurve(leftY + rightX, 4);
+		right_side_motors = defaultDriveCurve(leftY - rightX, 4);
 
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 			ShooterIntake = 90;
