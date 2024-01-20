@@ -85,7 +85,7 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 
 	chassis.calibrate();
-	chassis.setPose(-40, 53, 161);
+	chassis.setPose(-40, 53, 180);
 }
 
 /**
@@ -118,8 +118,31 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	//intake
 	chassis.turnTo(-25, 6, 1000);
 	chassis.moveTo(-25, 6, 1000);
+	chassis.turnTo(-43, 6, 1000);
+	//outtake
+	//wait
+	//intake
+	chassis.turnTo(-11, 2, 1000);
+	chassis.moveTo(-11, 2, 1000);
+	//stop intake
+	//deploy wings
+	chassis.turnTo(-42, 5, 1000);
+	chassis.moveTo(-42, 5, 1000);
+	chassis.moveTo(-38, 5, 1000);
+	//retract wings
+	//intake
+	chassis.turnTo(-10, 21, 1000);
+	chassis.moveTo(-10, 21, 1000);
+	chassis.turnTo(-45, 59, 1000);
+	chassis.moveTo(-45, 59, 1000);
+	//deploy wings
+	chassis.turnTo(-64, 43, 1000);
+	chassis.moveTo(-64, 43, 1000);
+	chassis.turnTo(-60, 28, 1000);
+	chassis.moveTo(-60, 28, 1000);
 }
 
 /**
