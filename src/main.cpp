@@ -30,7 +30,7 @@ pros::ADIDigitalIn limit('B');
 
 
 //pros::Rotation rot(19, false);
-pros::Imu imu(1);
+pros::Imu imu(11);
 
 //lemlib::TrackingWheel horizontal_tracking_wheel(&rot, 2.75, 4.3, 1);
 
@@ -73,7 +73,7 @@ lemlib::ChassisController_t angularController {
 // create the chassis
 lemlib::Chassis chassis(drivetrain, lateralController, angularController, sensors);
 
-int autonIndex = 3;
+int autonIndex = 2;
 std::string autoNames[4] = {"one-ball", "homeside", "visitorside", "vistor-one-ball"};
 
 void on_left_button() {
@@ -88,7 +88,7 @@ void on_left_button() {
 				chassis.setPose(-40, 53, 180);
 				break;
 			case 2:
-				chassis.setPose(-42, -51, 0);
+				chassis.setPose(-42, -51, 180);
 				break;
 			case 3:
 				chassis.setPose(-43, 50, 0);
@@ -108,7 +108,7 @@ void on_left_button() {
 				chassis.setPose(-40, 53, 180);
 				break;
 			case 2:
-				chassis.setPose(-42, -51, 0);
+				chassis.setPose(-42, -51, 180);
 				break;
 			case 3:
 				chassis.setPose(-43, 50, 0);
@@ -131,7 +131,7 @@ void on_right_button() {
 				chassis.setPose(-40, 53, 180);
 				break;
 			case 2:
-				chassis.setPose(-42, -51, 0);
+				chassis.setPose(-42, -51, 180);
 				break;
 			case 3:
 				chassis.setPose(-43, 50, 0);
@@ -151,7 +151,7 @@ void on_right_button() {
 				chassis.setPose(-40, 53, 180);
 				break;
 			case 2:
-				chassis.setPose(-42, -51, 0);
+				chassis.setPose(-42, -51, 180);
 				break;
 			case 3:
 				chassis.setPose(-43, 50, 0);
@@ -190,24 +190,25 @@ void initialize() {
 	//chassis.setPose(-40, 53, 180);
 	//visitorside pose
 	//chassis.setPose(-42, -51, 0);
-	switch(autonIndex) {
-			case 0:
-				chassis.setPose(-40, 53, 180);
-				break;
-			case 1:
-				chassis.setPose(-40, 53, 180);
-				break;
-			case 2:
-				chassis.setPose(-42, -51, 0);
-				break;
-			case 3:
-				chassis.setPose(-43, 50, 0);
-			default:
-				chassis.setPose(-40, 53, 180);
-				break;
-		} 
-	pros::lcd::register_btn0_cb(on_left_button);
-	pros::lcd::register_btn2_cb(on_right_button);
+
+	// switch(autonIndex) {
+	// 		case 0:
+	// 			chassis.setPose(-40, 53, 180);
+	// 			break;
+	// 		case 1:
+	// 			chassis.setPose(-40, 53, 180);
+	// 			break;
+	// 		case 2:
+				chassis.setPose(-42, -51, 180);
+		// 		break;
+		// 	case 3:
+		// 		chassis.setPose(-43, 50, 0);
+		// 	default:
+		// 		chassis.setPose(-40, 53, 180);
+		// 		break;
+		// } 
+	//pros::lcd::register_btn0_cb(on_left_button);
+	//pros::lcd::register_btn2_cb(on_right_button);
 
 	//homeside pose
 	//chassis.setPose(-40, 53, 180);
@@ -322,113 +323,115 @@ void autonomous() {
 	// ShooterIntake = -90;
 
 	//end
-	switch(autonIndex) {
-		case 0:
-		chassis.turnTo(-25, 6, 1000, false, 50);
-		chassis.moveTo(-25, 6, 1000, 100);
-		chassis.turnTo(-44, 5, 1000, false, 50);
-		chassis.moveTo(-50, 5, 1000, 100);
-		ShooterIntake = -90;
-		pros::delay(1500);
-		ShooterIntake = 0;
-			break;
-		case 1:
-		//intake
-		chassis.setPose(-40, 53, 180);
-		ShooterIntake = 90;
-		chassis.turnTo(-25, 6, 1000, false, 50);
-		chassis.moveTo(-25, 6, 1000, 100);
-		chassis.turnTo(-43, 6, 1000, false, 50);
-		pros::delay(200);
-		//outtake
-		ShooterIntake = -90;
-		//wait
-		pros::delay(200);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-11, 2, 1000, false, 50);
-		chassis.moveTo(-11, 2, 1000, 100);
-		//stop intake
-		ShooterIntake = 0;
-		//deploy wings
-		chassis.turnTo(-42, 5, 1000, false, 50);
+	// switch(autonIndex) {
+	// 	case 0:
+	// 	chassis.turnTo(-25, 6, 1000, false, 50);
+	// 	chassis.moveTo(-25, 6, 1000, 100);
+	// 	chassis.turnTo(-44, 5, 1000, false, 50);
+	// 	chassis.moveTo(-50, 5, 1000, 100);
+	// 	ShooterIntake = -90;
+	// 	pros::delay(1500);
+	// 	ShooterIntake = 0;
+	// 		break;
+	// 	case 1:
+	// 	//intake
+	// 	chassis.setPose(-40, 53, 180);
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-25, 6, 1000, false, 50);
+	// 	chassis.moveTo(-25, 6, 1000, 100);
+	// 	chassis.turnTo(-43, 6, 1000, false, 50);
+	// 	pros::delay(200);
+	// 	//outtake
+	// 	ShooterIntake = -90;
+	// 	//wait
+	// 	pros::delay(200);
+	// 	//intake
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-11, 2, 1000, false, 50);
+	// 	chassis.moveTo(-11, 2, 1000, 100);
+	// 	//stop intake
+	// 	ShooterIntake = 0;
+	// 	//deploy wings
+	// 	chassis.turnTo(-42, 5, 1000, false, 50);
+	// 	//wings.set_value(true);
+	// 	chassis.moveTo(-48, 5, 1000, 100);
+	// 	//chassis.moveTo(-38, 5, 1000, 100);
+	// 	//retract wings
+	// 	//wings.set_value(false);
+	// 	//intake
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-10, 21, 1000, false, 50);
+	// 	chassis.moveTo(-10, 21, 1000, 100);
+	// 	chassis.turnTo(-45, 59, 1000, false, 50);
+	// 	chassis.moveTo(-45, 59, 1000, 100);
+	// 	ShooterIntake = 0;
+	// 	//deploy wings
+	// 	//wings.set_value(true);
+	// 	chassis.turnTo(-64, 43, 1000, false, 50);
+	// 	chassis.moveTo(-64, 43, 1000, 100);
+	// 	chassis.turnTo(-60, 22, 1000, false, 50);
+	// 	chassis.moveTo(-60, 22, 1000, 100);
+	// 		break;
+	// 	case 2:
 		wings.set_value(true);
-		chassis.moveTo(-48, 5, 1000, 100);
-		//chassis.moveTo(-38, 5, 1000, 100);
-		//retract wings
-		wings.set_value(false);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-10, 21, 1000, false, 50);
-		chassis.moveTo(-10, 21, 1000, 100);
-		chassis.turnTo(-45, 59, 1000, false, 50);
-		chassis.moveTo(-45, 59, 1000, 100);
-		ShooterIntake = 0;
-		//deploy wings
-		wings.set_value(true);
-		chassis.turnTo(-64, 43, 1000, false, 50);
-		chassis.moveTo(-64, 43, 1000, 100);
-		chassis.turnTo(-60, 22, 1000, false, 50);
-		chassis.moveTo(-60, 22, 1000, 100);
-			break;
-		case 2:
-		chassis.setPose(-42, -51, 0);
 		chassis.turnTo(-33, -66, 1000, false, 50);
-		wings.set_value(true);
 		pros::delay(200);
 		wings.set_value(false);
-		chassis.turnTo(-7, -50, 1000, false, 50);
-		chassis.moveTo(-7, -50, 1000, 100);
+		pros::delay(700);
+		chassis.turnTo(-7, -60, 1000, true, 50);
+		chassis.moveTo(-7, -60 , 1000, 100);
 		//outtake
 		ShooterIntake = -90;
-			break;
-		case 3: 
-		wings.set_value(true);
-		chassis.turnTo(8,58, 1000, false, 50);
-		wings.set_value(false);
-		chassis.moveTo(8, 58, 1000, 100);
-			break;
-		default:
-		chassis.setPose(-40, 53, 180);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-25, 6, 1000, false, 50);
-		chassis.moveTo(-25, 6, 1000, 100);
-		chassis.turnTo(-43, 6, 1000, false, 50);
-		pros::delay(200);
-		//outtake
-		ShooterIntake = -90;
-		//wait
-		pros::delay(200);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-11, 2, 1000, false, 50);
-		chassis.moveTo(-11, 2, 1000, 100);
-		//stop intake
+		pros::delay(2000);
 		ShooterIntake = 0;
-		//deploy wings
-		chassis.turnTo(-42, 5, 1000, false, 50);
-		wings.set_value(true);
-		chassis.moveTo(-48, 5, 1000, 100);
-		//chassis.moveTo(-38, 5, 1000, 100);
-		//retract wings
-		wings.set_value(false);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-10, 21, 1000, false, 50);
-		chassis.moveTo(-10, 21, 1000, 100);
-		chassis.turnTo(-45, 59, 1000, false, 50);
-		chassis.moveTo(-45, 59, 1000, 100);
-		ShooterIntake = 0;
-		//deploy wings
-		wings.set_value(true);
-		chassis.turnTo(-64, 43, 1000, false, 50);
-		chassis.moveTo(-64, 43, 1000, 100);
-		chassis.turnTo(-60, 22, 1000, false, 50);
-		chassis.moveTo(-60, 22, 1000, 100);
-			break;
+	// 		break;
+	// 	case 3: 
+	// 	wings.set_value(true);
+	// 	chassis.turnTo(8,58, 1000, false, 50);
+	// 	wings.set_value(false);
+	// 	chassis.moveTo(8, 58, 1000, 100);
+	// 		break;
+	// 	default:
+	// 	chassis.setPose(-40, 53, 180);
+	// 	//intake
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-25, 6, 1000, false, 50);
+	// 	chassis.moveTo(-25, 6, 1000, 100);
+	// 	chassis.turnTo(-43, 6, 1000, false, 50);
+	// 	pros::delay(200);
+	// 	//outtake
+	// 	ShooterIntake = -90;
+	// 	//wait
+	// 	pros::delay(200);
+	// 	//intake
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-11, 2, 1000, false, 50);
+	// 	chassis.moveTo(-11, 2, 1000, 100);
+	// 	//stop intake
+	// 	ShooterIntake = 0;
+	// 	//deploy wings
+	// 	chassis.turnTo(-42, 5, 1000, false, 50);
+	// 	wings.set_value(true);
+	// 	chassis.moveTo(-48, 5, 1000, 100);
+	// 	//chassis.moveTo(-38, 5, 1000, 100);
+	// 	//retract wings
+	// 	wings.set_value(false);
+	// 	//intake
+	// 	ShooterIntake = 90;
+	// 	chassis.turnTo(-10, 21, 1000, false, 50);
+	// 	chassis.moveTo(-10, 21, 1000, 100);
+	// 	chassis.turnTo(-45, 59, 1000, false, 50);
+	// 	chassis.moveTo(-45, 59, 1000, 100);
+	// 	ShooterIntake = 0;
+	// 	//deploy wings
+	// 	wings.set_value(true);
+	// 	chassis.turnTo(-64, 43, 1000, false, 50);
+	// 	chassis.moveTo(-64, 43, 1000, 100);
+	// 	chassis.turnTo(-60, 22, 1000, false, 50);
+	// 	chassis.moveTo(-60, 22, 1000, 100);
+	// 		break;
 
-	}
+	// }
 }
 
 /**
@@ -453,7 +456,11 @@ float defaultDriveCurve(float input, float scale) {
     return input;
 }
 
-void detectBall() {
+/*void detectBall() {
+	while(pros::c::adi_digital_read('B') == 0) {
+				ShooterIntake = -90;
+	}
+
 	while(true) {
 		if(pros::c::adi_analog_read('C') < 500) {
 			pros::delay(750);
@@ -467,7 +474,7 @@ void detectBall() {
 			ShooterIntake = 0;
 		}
 	}
-}
+}*/
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
@@ -486,17 +493,17 @@ void opcontrol() {
 	int t = 20; //turningCurve --> change to adjust sensitivity of turning
 	int d = 2; //drivingCurve --> change to adjust sensitivity of forward / backward movement
 
-	pros::Task detectandLuanch(detectBall);
+	//pros::Task detectandLuanch(detectBall);
 
 	while (true) {
 		leftY = master.get_analog(ANALOG_LEFT_Y);
 		rightX = master.get_analog(ANALOG_RIGHT_X);
 
-		if(abs(leftY) < deadzone) {
+		if(std::abs(leftY) < deadzone) {
 			leftY = 0;
 		}
 
-		if(abs(rightX) < deadzone) {
+		if(std::abs(rightX) < deadzone) {
 			rightX = 0;
 		}
 		
