@@ -370,7 +370,7 @@ void autonomous() {
 	// 	chassis.turnTo(-64, 43, 1000, false, 50);
 	// 	chassis.moveTo(-64, 43, 1000, 100);
 	// 	chassis.turnTo(-60, 22, 1000, false, 50);
-	// 	chassis.moveTo(-60, 22, 1000, 100);
+	// 	chassis.moveTo(-60, 2
 	// 		break;
 	// 	case 2:
 		wings.set_value(true);
@@ -378,10 +378,10 @@ void autonomous() {
 		pros::delay(200);
 		wings.set_value(false);
 		pros::delay(700);
-		chassis.turnTo(-7, -60, 1000, true, 50);
-		chassis.moveTo(-7, -60 , 1000, 100);
-		//outtake
-		ShooterIntake = -90;
+		chassis.turnTo(-6, -60, 1000, true, 50);
+		chassis.moveTo(-6, -60 , 1000, 100);
+		//outtake 
+		ShooterIntake = -90; 
 		pros::delay(2000);
 		ShooterIntake = 0;
 	// 		break;
