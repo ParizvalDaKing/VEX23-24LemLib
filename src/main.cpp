@@ -373,20 +373,12 @@ void autonomous() {
 			break;
 		case 2:
 		chassis.setPose(-42, -51, 0);
-		//intake
-		ShooterIntake = 90;
-		chassis.turnTo(-24, -5, 1000, false, 50);
-		chassis.moveTo(-24, -5, 1000, 100);
-		//stop intake
-		pros::delay(200);
-		ShooterIntake = 0;
-		//deploy wings
-		chassis.turnTo(-50, -59, 1000, false, 50);
-		chassis.moveTo(-50, -59.6, 1000, 100);
+		chassis.turnTo(-33, -66, 1000, false, 50);
 		wings.set_value(true);
-		chassis.turnTo(-6, -52, 1000, false, 50);
+		pros::delay(200);
 		wings.set_value(false);
-		chassis.moveTo(-6, -52, 1000, 100);
+		chassis.turnTo(-7, -50, 1000, false, 50);
+		chassis.moveTo(-7, -50, 1000, 100);
 		//outtake
 		ShooterIntake = -90;
 			break;
@@ -461,6 +453,22 @@ float defaultDriveCurve(float input, float scale) {
     return input;
 }
 
+void detectBall() {
+	while(true) {
+		if(pros::c::adi_analog_read('C') < 500) {
+			pros::delay(750);
+			while(pros::c::adi_digital_read('B') == 1) {
+				ShooterIntake = -90;
+			}
+			pros::delay(500);
+			while(pros::c::adi_digital_read('B') == 0) {
+				ShooterIntake = -90;
+			}
+			ShooterIntake = 0;
+		}
+	}
+}
+
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -477,6 +485,8 @@ void opcontrol() {
 	int deadzone = 10;
 	int t = 20; //turningCurve --> change to adjust sensitivity of turning
 	int d = 2; //drivingCurve --> change to adjust sensitivity of forward / backward movement
+
+	pros::Task detectandLuanch(detectBall);
 
 	while (true) {
 		leftY = master.get_analog(ANALOG_LEFT_Y);
