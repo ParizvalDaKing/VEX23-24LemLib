@@ -3,7 +3,6 @@
 #include <cmath>
 #include <string>
 
-//lol
 /**
  * A callback function for LLEMU's center button.
  *
@@ -26,6 +25,8 @@ pros::Motor_Group ShooterIntake({leftShooterIntake, rightShooterIntake});
 pros::ADIDigitalOut wings ('H');
 pros::ADIDigitalOut lift ('G');
 pros::ADIDigitalOut pto ('F');
+pros::ADIAnalogIn light('C');
+pros::ADIDigitalIn limit('B');
 
 
 //pros::Rotation rot(19, false);
@@ -474,33 +475,33 @@ void opcontrol() {
 	float right_stick_prev = 0;
 
 	int deadzone = 10;
+	int t = 20; //turningCurve --> change to adjust sensitivity of turning
+	int d = 2; //drivingCurve --> change to adjust sensitivity of forward / backward movement
 
 	while (true) {
 		leftY = master.get_analog(ANALOG_LEFT_Y);
 		rightX = master.get_analog(ANALOG_RIGHT_X);
 
-		//drift reduction
-
-		//smoothing
-
-		right_stick_smoothed = (rightX * 0.4) + (right_stick_prev * 0.6);
-		left_stick_smoothed =  (leftY * 0.4) + (left_stick_prev * 0.6);
-
-		right_stick_prev = right_stick_smoothed;
-		left_stick_prev = left_stick_smoothed;
-
-
-		//end of smoothing
-
 		if(abs(leftY) < deadzone) {
 			leftY = 0;
 		}
+
 		if(abs(rightX) < deadzone) {
 			rightX = 0;
 		}
+		
+		//drift reduction 
+		//Andrew - update 2/9/24
+		//https://www.desmos.com/calculator/jhvddogfxv
 
-		//end of drift reduction
+		//smoothing
+		right_stick_smoothed = ((std::exp(-t / 12.5102293) + std::exp((std::abs(rightX) - 132.55) / 69) * (1 - std::exp(-t / 10))) * rightX * 0.4) + (right_stick_prev * 0.6);
+		left_stick_smoothed =  ((std::exp(-d / 10) + std::exp((std::abs(leftY) - 100) / 10) * (1 - std::exp(-d / 10))) * leftY * 0.4) + (left_stick_prev * 0.6);
+		right_stick_prev = right_stick_smoothed;
+		left_stick_prev = left_stick_smoothed;
+		//end smoothing
 
+		//Apply new values to motors, make them move
 		left_side_motors = defaultDriveCurve(left_stick_smoothed + right_stick_smoothed, 4);
 		right_side_motors = defaultDriveCurve(left_stick_smoothed - right_stick_smoothed, 4);
 
