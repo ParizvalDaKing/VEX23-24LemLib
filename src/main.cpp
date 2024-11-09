@@ -10,37 +10,65 @@
  * "I was pressed!" and nothing.
  */
 
-pros::Motor left_front_motor(2, pros::E_MOTOR_GEARSET_06, true); // port 1, blue gearbox, not reversed
-pros::Motor left_middle_motor(19, pros::E_MOTOR_GEARSET_06, true);
-pros::Motor left_back_motor(5, pros::E_MOTOR_GEARSET_06, true); // port 2, green gearbox, not reversed
-pros::Motor right_front_motor(7, pros::E_MOTOR_GEARSET_06, false); // port 3, red gearbox, reversed
-pros::Motor right_middle_motor(6,pros::E_MOTOR_GEARSET_06, false);
-pros::Motor right_back_motor(4, pros::E_MOTOR_GEARSET_06, false); // port 4, red gearbox, reversed
+//#define TEMPC
+#ifdef TEMPC
+
+pros::Motor left_front_motor(1, pros::E_MOTOR_GEARSET_06, true); // port 1, blue gearbox, not reversed
+pros::Motor left_middle_motor(2, pros::E_MOTOR_GEARSET_18, true);
+pros::Motor left_back_motor(3, pros::E_MOTOR_GEARSET_06, true); // port 2, green gearbox, not reversed
+pros::Motor right_front_motor(4, pros::E_MOTOR_GEARSET_06, false); // port 3, red gearbox, reversed
+pros::Motor right_middle_motor(5,pros::E_MOTOR_GEARSET_18, false);
+pros::Motor right_back_motor(7, pros::E_MOTOR_GEARSET_06, false); // port 4, red gearbox, reversed
+
+pros::Imu imu(4);
 
 pros::MotorGroup left_side_motors({left_front_motor, left_middle_motor, left_back_motor});
 pros::MotorGroup right_side_motors({right_front_motor, right_middle_motor, right_back_motor});
-pros::Motor leftShooterIntake(8, pros::E_MOTOR_GEARSET_06, true);
-pros::Motor rightShooterIntake(9, pros::E_MOTOR_GEARSET_06);
+pros::Motor leftShooterIntake(18, pros::E_MOTOR_GEARSET_06, false); //conveyor
+pros::Motor rightShooterIntake(21, pros::E_MOTOR_GEARSET_06); //intake
 pros::Motor_Group ShooterIntake({leftShooterIntake, rightShooterIntake});
-pros::ADIDigitalOut wings ('H');
-pros::ADIDigitalOut lift ('G');
-pros::ADIDigitalOut pto ('F');
-pros::ADIAnalogIn light('C');
-pros::ADIDigitalIn limit('B');
+pros::ADIDigitalOut pistonA ('A');
+pros::ADIDigitalOut pistonB ('B');
+pros::ADIDigitalIn line ('H');
 
+lemlib::Drivetrain_t drivetrain {
+    &left_side_motors, // left drivetrain motors
+    &right_side_motors, // right drivetrain motors
+    12.5, // track width
+    3.25, // wheel diameter
+    450 // wheel rpm
+};
+
+
+#else
+pros::Motor left_front_motor(1, pros::E_MOTOR_GEARSET_06, true); // port 1, blue gearbox, not reversed
+pros::Motor left_middle_motor(3, pros::E_MOTOR_GEARSET_18, true);
+pros::Motor left_back_motor(2, pros::E_MOTOR_GEARSET_06, true); // port 2, green gearbox, not reversed
+pros::Motor right_front_motor(13, pros::E_MOTOR_GEARSET_06, false); // port 3, red gearbox, reversed
+pros::Motor right_middle_motor(12,pros::E_MOTOR_GEARSET_18, false);
+pros::Motor right_back_motor(11, pros::E_MOTOR_GEARSET_06, false); // port 4, red gearbox, reversed
+
+pros::MotorGroup left_side_motors({left_front_motor, left_middle_motor, left_back_motor});
+pros::MotorGroup right_side_motors({right_front_motor, right_middle_motor, right_back_motor});
+pros::Motor leftShooterIntake(5, pros::E_MOTOR_GEARSET_06, false); //conveyor
+//pros::Motor rightShooterIntake(21, pros::E_MOTOR_GEARSET_06); //intake
+pros::Motor_Group ShooterIntake({leftShooterIntake, /*rightShooterIntake*/});
+pros::ADIDigitalOut pistonA ('H');
+//pros::ADIDigitalIn line ('H');
 
 //pros::Rotation rot(19, false);
-pros::Imu imu(11);
+pros::Imu imu(4);
 
 //lemlib::TrackingWheel horizontal_tracking_wheel(&rot, 2.75, 4.3, 1);
 
 lemlib::Drivetrain_t drivetrain {
     &left_side_motors, // left drivetrain motors
     &right_side_motors, // right drivetrain motors
-    10, // track width
-    3.25, // wheel diameter
-    450 // wheel rpm
+    11.5, // track width
+    2.75, // wheel diameter
+    600 // wheel rpm
 };
+#endif
 
 lemlib::OdomSensors_t sensors {
     nullptr, // vertical tracking wheel 1
@@ -249,189 +277,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	//uncomment pose
 
-	//one-ball
-	
-	// chassis.turnTo(-25, 6, 1000, false, 50);
-	// chassis.moveTo(-25, 6, 1000, 100);
-	// chassis.turnTo(-44, 5, 1000, false, 50);
-	// chassis.moveTo(-50, 5, 1000, 100);
-	// ShooterIntake = -90;
-	// pros::delay(1500);
-	// ShooterIntake = 0;
-	//end 
-
-	//homeside
-
-	// //intake
-	// ShooterIntake = 90;
-	// chassis.turnTo(-25, 6, 1000, false, 50);
-	// chassis.moveTo(-25, 6, 1000, 100);
-	// chassis.turnTo(-43, 6, 1000, false, 50);
-	// pros::delay(200);
-	// //outtake
-	// ShooterIntake = -90;
-	// //wait
-	// pros::delay(200);
-	// //intake
-	// ShooterIntake = 90;
-	// chassis.turnTo(-11, 2, 1000, false, 50);
-	// chassis.moveTo(-11, 2, 1000, 100);
-	// //stop intake
-	// ShooterIntake = 0;
-	// //deploy wings
-	// chassis.turnTo(-42, 5, 1000, false, 50);
-	// wings.set_value(true);
-	// chassis.moveTo(-48, 5, 1000, 100);
-	// //chassis.moveTo(-38, 5, 1000, 100);
-	// //retract wings
-	// wings.set_value(false);
-	// //intake
-	// ShooterIntake = 90;
-	// chassis.turnTo(-10, 21, 1000, false, 50);
-	// chassis.moveTo(-10, 21, 1000, 100);
-	// chassis.turnTo(-45, 59, 1000, false, 50);
-	// chassis.moveTo(-45, 59, 1000, 100);
-	// ShooterIntake = 0;
-	// //deploy wings
-	// wings.set_value(true);
-	// chassis.turnTo(-64, 43, 1000, false, 50);
-	// chassis.moveTo(-64, 43, 1000, 100);
-	// chassis.turnTo(-60, 22, 1000, false, 50);
-	// chassis.moveTo(-60, 22, 1000, 100);
-
-	//end
-
-	//vistor side
-
-	// //intake
-	// ShooterIntake = 90;
-	// chassis.turnTo(-24, -5, 1000, false, 50);
-	// chassis.moveTo(-24, -5, 1000, 100);
-	// //stop intake
-	// pros::delay(200);
-	// ShooterIntake = 0;
-	// //deploy wings
-	// chassis.turnTo(-50, -59, 1000, false, 50);
-	// chassis.moveTo(-50, -59.6, 1000, 100);
-	// wings.set_value(true);
-	// chassis.turnTo(-6, -52, 1000, false, 50);
-	// wings.set_value(false);
-	// chassis.moveTo(-6, -52, 1000, 100);
-	// //outtake
-	// ShooterIntake = -90;
-
-	//end
-	// switch(autonIndex) {
-	// 	case 0:
-	// 	chassis.turnTo(-25, 6, 1000, false, 50);
-	// 	chassis.moveTo(-25, 6, 1000, 100);
-	// 	chassis.turnTo(-44, 5, 1000, false, 50);
-	// 	chassis.moveTo(-50, 5, 1000, 100);
-	// 	ShooterIntake = -90;
-	// 	pros::delay(1500);
-	// 	ShooterIntake = 0;
-	// 		break;
-	// 	case 1:
-	// 	//intake
-	// 	chassis.setPose(-40, 53, 180);
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-25, 6, 1000, false, 50);
-	// 	chassis.moveTo(-25, 6, 1000, 100);
-	// 	chassis.turnTo(-43, 6, 1000, false, 50);
-	// 	pros::delay(200);
-	// 	//outtake
-	// 	ShooterIntake = -90;
-	// 	//wait
-	// 	pros::delay(200);
-	// 	//intake
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-11, 2, 1000, false, 50);
-	// 	chassis.moveTo(-11, 2, 1000, 100);
-	// 	//stop intake
-	// 	ShooterIntake = 0;
-	// 	//deploy wings
-	// 	chassis.turnTo(-42, 5, 1000, false, 50);
-	// 	//wings.set_value(true);
-	// 	chassis.moveTo(-48, 5, 1000, 100);
-	// 	//chassis.moveTo(-38, 5, 1000, 100);
-	// 	//retract wings
-	// 	//wings.set_value(false);
-	// 	//intake
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-10, 21, 1000, false, 50);
-	// 	chassis.moveTo(-10, 21, 1000, 100);
-	// 	chassis.turnTo(-45, 59, 1000, false, 50);
-	// 	chassis.moveTo(-45, 59, 1000, 100);
-	// 	ShooterIntake = 0;
-	// 	//deploy wings
-	// 	//wings.set_value(true);
-	// 	chassis.turnTo(-64, 43, 1000, false, 50);
-	// 	chassis.moveTo(-64, 43, 1000, 100);
-	// 	chassis.turnTo(-60, 22, 1000, false, 50);
-	// 	chassis.moveTo(-60, 2
-	// 		break;
-	// 	case 2:
-		wings.set_value(true);
-		chassis.turnTo(-33, -66, 1000, false, 50);
-		pros::delay(200);
-		wings.set_value(false);
-		pros::delay(700);
-		chassis.turnTo(-6, -60, 1000, true, 50);
-		chassis.moveTo(-6, -60 , 1000, 100);
-		//outtake 
-		ShooterIntake = -90; 
-		pros::delay(2000);
-		ShooterIntake = 0;
-	// 		break;
-	// 	case 3: 
-	// 	wings.set_value(true);
-	// 	chassis.turnTo(8,58, 1000, false, 50);
-	// 	wings.set_value(false);
-	// 	chassis.moveTo(8, 58, 1000, 100);
-	// 		break;
-	// 	default:
-	// 	chassis.setPose(-40, 53, 180);
-	// 	//intake
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-25, 6, 1000, false, 50);
-	// 	chassis.moveTo(-25, 6, 1000, 100);
-	// 	chassis.turnTo(-43, 6, 1000, false, 50);
-	// 	pros::delay(200);
-	// 	//outtake
-	// 	ShooterIntake = -90;
-	// 	//wait
-	// 	pros::delay(200);
-	// 	//intake
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-11, 2, 1000, false, 50);
-	// 	chassis.moveTo(-11, 2, 1000, 100);
-	// 	//stop intake
-	// 	ShooterIntake = 0;
-	// 	//deploy wings
-	// 	chassis.turnTo(-42, 5, 1000, false, 50);
-	// 	wings.set_value(true);
-	// 	chassis.moveTo(-48, 5, 1000, 100);
-	// 	//chassis.moveTo(-38, 5, 1000, 100);
-	// 	//retract wings
-	// 	wings.set_value(false);
-	// 	//intake
-	// 	ShooterIntake = 90;
-	// 	chassis.turnTo(-10, 21, 1000, false, 50);
-	// 	chassis.moveTo(-10, 21, 1000, 100);
-	// 	chassis.turnTo(-45, 59, 1000, false, 50);
-	// 	chassis.moveTo(-45, 59, 1000, 100);
-	// 	ShooterIntake = 0;
-	// 	//deploy wings
-	// 	wings.set_value(true);
-	// 	chassis.turnTo(-64, 43, 1000, false, 50);
-	// 	chassis.moveTo(-64, 43, 1000, 100);
-	// 	chassis.turnTo(-60, 22, 1000, false, 50);
-	// 	chassis.moveTo(-60, 22, 1000, 100);
-	// 		break;
-
-	// }
 }
 
 /**
@@ -532,22 +378,19 @@ void opcontrol() {
 			ShooterIntake = 0;
 		}
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			wings.set_value(true);
+		
 		}
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			wings.set_value(false);
+		
 		}
 
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) && !liftPressed) {
-			lift.set_value(true);
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && !liftPressed) {
+			pistonA.set_value(true);
 			liftPressed = true;
 		}
 		else {
-			lift.set_value(false);
+			pistonA.set_value(false);
 			liftPressed = false;
-		}
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-			pto.set_value(true);
 		}
 
 
